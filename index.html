@@ -456,7 +456,7 @@ function ghosts(){
   if(reduce)return;const svg='<svg viewBox="0 0 40 50"><path d="M20 2C9 2 4 11 4 22v24l6-5 5 5 5-5 5 5 5-5 6 5V22C36 11 31 2 20 2z" fill="'+LVc.wisp+'" opacity=".85"/><ellipse cx="14" cy="20" rx="3" ry="4.5" fill="#0f0a18"/><ellipse cx="26" cy="20" rx="3" ry="4.5" fill="#0f0a18"/><ellipse cx="20" cy="31" rx="3" ry="4" fill="#0f0a18"/></svg>';
   for(let i=0;i<6;i++){const d=document.createElement("div");d.className="wisp";d.innerHTML=svg;d.style.left=(18+i*11+Math.random()*4)+"%";d.style.animationDelay=(.4+i*.35)+"s";d.style.setProperty("--dx",((Math.random()-.5)*120)+"%");radio.appendChild(d);setTimeout(()=>d.remove(),6000+i*400);}
 }
-function saveProgress(){try{localStorage.setItem("hr-progress",JSON.stringify({codes:codes.slice(0,2)}));}catch(e){}}
+function saveProgress(){}
 function levelWin(code){
   won=true;cancelSeq();document.body.classList.add("won");codes[L]=code;saveProgress();
   hush();on=true;TUNES[L]();ghosts();
@@ -490,13 +490,9 @@ function setLevel(i,fresh){
 }
 
 $("restart").addEventListener("click",()=>{advTok++;codes=[];saveProgress();setLevel(0,true);scrollTo({top:0,behavior:reduce?"auto":"smooth"});});
-// pick up where this browser left off
-(function resume(){
-  let p=null;try{p=JSON.parse(localStorage.getItem("hr-progress"));}catch(e){}
-  const c=p&&Array.isArray(p.codes)?p.codes:[];
-  for(let i=0;i<c.length&&i<LV.length-1;i++){if(typeof c[i]==="string"&&fnv("hr|L"+(i+1)+"|"+c[i])===LV[i].hash)codes[i]=c[i];else break;}
-  setLevel(codes.length,false);
-})();
+// every visit starts at the first radio
+try{localStorage.removeItem("hr-progress");}catch(e){}
+setLevel(0,false);
 
 /* ---------- drawing ---------- */
 function size(){const dpr=Math.min(2,window.devicePixelRatio||1);[dial,eye].forEach(c=>{c.width=Math.round(c.clientWidth*dpr);c.height=Math.round(c.clientHeight*dpr);});}
