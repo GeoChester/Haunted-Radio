@@ -5,7 +5,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almendra+SC&family=Almendra:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&display=swap">
 <style>
-/* Layout: one centred column — title, a 1930s cathedral radio, five ivory preset keys, then the coordinates */
+/* Layout: one centred column — title, level name, the radio of the current level, five ivory preset keys, then the next-radio prompt or the coordinates */
 :root{
   --night:#0f0a18; --plum:#24153a; --wood:#5b3216; --amber:#ffb347;
   --ivory:#efe2c4; --ghost:#b8ffc9; --ink:#e9dcc0; --muted:#a8946f;
@@ -15,15 +15,21 @@
   color-scheme:dark;
 }
 html,body{height:100%}
-body{margin:0;background:radial-gradient(120% 80% at 50% 0%,#2b1a45 0%,var(--night) 60%) fixed,var(--night);color:var(--ink);font-family:var(--text);overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(120% 80% at 50% 0%,#2b1a45 0%,var(--night) 60%) fixed,var(--night);color:var(--ink);font-family:var(--text);overflow-x:hidden;-webkit-tap-highlight-color:transparent;transition:background .8s}
+body.lv2{background:radial-gradient(120% 80% at 50% 0%,#3a1450 0%,#0e0614 60%) fixed,#0e0614}
+body.lv3{background:radial-gradient(120% 80% at 50% 0%,#123440 0%,#060d12 60%) fixed,#060d12}
 .stage{min-height:100%;padding-top:52px!important;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:14px;padding-block:18px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,9vw,52px);margin:6px 0 0;letter-spacing:.04em;color:#ffcf86;text-shadow:0 0 18px rgba(255,150,40,.45),0 2px 0 #3a1d08;text-wrap:balance;text-align:center;line-height:1}
+body.lv2 h1{color:#e9c2ff;text-shadow:0 0 18px rgba(190,100,255,.5),0 2px 0 #2a0a3a}
+body.lv3 h1{color:#bff3ff;text-shadow:0 0 18px rgba(90,210,255,.5),0 2px 0 #06222c}
 .tag{margin:-6px 0 0;font-style:italic;color:var(--muted);font-size:16px;text-align:center}
 .music{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));z-index:20;font-family:var(--display);font-size:15px;background:rgba(36,21,58,.85);color:var(--muted);border:1px solid #5a4378;border-radius:999px;padding:7px 14px;cursor:pointer}
 .music[aria-pressed="true"]{color:#ffcf86;border-color:#c98a3a;box-shadow:0 0 12px rgba(255,160,60,.35)}
-.music:focus-visible,.key:focus-visible,.knob:focus-visible{outline:2px solid var(--ghost);outline-offset:3px}
+.music:focus-visible,.key:focus-visible,.knob:focus-visible,.next:focus-visible,.restart:focus-visible{outline:2px solid var(--ghost);outline-offset:3px}
 
-.radio{position:relative;width:min(92vw,400px,calc((100vh - 270px)*360/460));min-width:250px;aspect-ratio:360/460;max-width:100%;user-select:none;-webkit-user-select:none}
+.radio{position:relative;width:min(92vw,400px,calc((100vh - 290px)*360/460));min-width:250px;aspect-ratio:360/460;max-width:100%;user-select:none;-webkit-user-select:none}
+.radio.appear{animation:appear 1.2s ease-out}
+@keyframes appear{0%{opacity:0;filter:blur(6px) brightness(2)}100%{opacity:1;filter:none}}
 .radio svg.cab{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 18px 30px rgba(0,0,0,.7))}
 .radio.thud{animation:thud .18s ease-out}
 @keyframes thud{0%{transform:translate(0,0)}30%{transform:translate(-2px,2px) rotate(-.4deg)}60%{transform:translate(2px,-1px) rotate(.3deg)}100%{transform:none}}
@@ -37,7 +43,14 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,9vw,52px);mar
 .knob .face{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7a4a26,#3a1d0b 60%,#1e0e05);box-shadow:0 3px 6px rgba(0,0,0,.7),inset 0 -2px 4px rgba(0,0,0,.6),inset 0 2px 3px rgba(255,210,150,.25)}
 .knob .face::before{content:"";position:absolute;inset:9%;border-radius:50%;background:repeating-conic-gradient(#4a2711 0 6deg,#2d150a 6deg 12deg);opacity:.75}
 .knob .face::after{content:"";position:absolute;left:47%;top:8%;width:6%;height:30%;border-radius:3px;background:var(--ivory);box-shadow:0 0 4px rgba(255,230,180,.6)}
-.knob .lbl{position:absolute;left:50%;bottom:-24%;transform:translateX(-50%);font-family:var(--display);font-size:11px;letter-spacing:.14em;color:#d9b07a;white-space:nowrap;pointer-events:none}
+/* coffin set: ebony knobs with brass rims */
+.radio.l2 .knob .face{background:radial-gradient(circle at 35% 30%,#4d3a49,#1b1019 58%,#070309);box-shadow:0 0 0 2px #b8893a,0 3px 6px rgba(0,0,0,.8),inset 0 2px 3px rgba(230,190,255,.25)}
+.radio.l2 .knob .face::before{background:repeating-conic-gradient(#2c1d29 0 8deg,#130a11 8deg 16deg)}
+.radio.l2 .knob .face::after{background:#efcf7a;box-shadow:0 0 5px rgba(240,200,110,.7)}
+/* tombstone set: bone knobs */
+.radio.l3 .knob .face{background:radial-gradient(circle at 35% 30%,#fffaf0,#d9d0b8 55%,#8a816b);box-shadow:0 0 0 2px #3a3c41,0 3px 6px rgba(0,0,0,.8),inset 0 -2px 4px rgba(60,50,30,.45)}
+.radio.l3 .knob .face::before{background:repeating-conic-gradient(#e6dfcc 0 8deg,#c9bfa6 8deg 16deg)}
+.radio.l3 .knob .face::after{background:#1f2326;box-shadow:none}
 .wisp{position:absolute;bottom:40%;width:16%;pointer-events:none;opacity:0;animation:rise 4.5s ease-out forwards}
 @keyframes rise{0%{opacity:0;transform:translateY(0) scale(.5)}15%{opacity:.85}100%{opacity:0;transform:translateY(-180%) translateX(var(--dx)) scale(1.1)}}
 
@@ -47,22 +60,33 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,9vw,52px);mar
 .key .rn{font-size:13px;letter-spacing:.1em;color:#7a5530}
 .key .dg{font-family:var(--mono);font-size:26px;line-height:1;min-height:26px;color:#2a160a}
 .key.filled .dg{color:#7d1f12}
+body.lv2 .key{background:linear-gradient(#3b2a38,#1e131c);border-color:#b8893a;color:#efcf7a;box-shadow:0 4px 0 #6e4c18,0 6px 10px rgba(0,0,0,.6)}
+body.lv2 .key .rn{color:#c9a25a}body.lv2 .key .dg{color:#f3e2ff}body.lv2 .key.filled .dg{color:#d99bff}
+body.lv3 .key{background:linear-gradient(#a7aab0,#6c6f75);border-color:#2b2d31;color:#1c1e21;box-shadow:0 4px 0 #34363b,0 6px 10px rgba(0,0,0,.6)}
+body.lv3 .key .rn{color:#2b2d31}body.lv3 .key .dg{color:#111315}body.lv3 .key.filled .dg{color:#0b5a40}
 .won .key{pointer-events:none}
+
+.passage{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;animation:flick 2.4s ease-out}
+.passage p{margin:0;font-style:italic;font-size:18px;color:#d8c7a6;max-width:30ch;text-wrap:balance}
+.next{font-family:var(--display);font-size:19px;letter-spacing:.06em;padding:12px 22px;min-height:44px;border-radius:999px;border:1px solid #9dffa8;background:rgba(20,40,24,.75);color:#c9ffd0;box-shadow:0 0 16px rgba(120,255,150,.35);cursor:pointer}
+.restart{font-family:var(--text);font-style:italic;font-size:15px;background:none;border:0;color:var(--muted);cursor:pointer;padding:10px 12px;min-height:44px;text-decoration:underline;text-underline-offset:3px}
 
 .coords{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:4px;font-family:var(--mono);font-size:clamp(28px,8.4vw,42px);letter-spacing:.06em;animation:flick 2.4s ease-out}
 .coord-n{color:#8dff88;text-shadow:0 0 8px rgba(141,255,136,.9),0 0 22px rgba(80,255,90,.55);animation:glow 3s ease-in-out infinite}
 .coord-w{color:#ffab55;text-shadow:0 0 8px rgba(255,171,85,.9),0 0 22px rgba(255,120,30,.55);animation:glow 3s ease-in-out infinite .6s}
 @keyframes glow{50%{filter:brightness(1.25)}}
 @keyframes flick{0%{opacity:0}10%{opacity:.8}14%{opacity:.1}22%{opacity:.9}26%{opacity:.2}40%,100%{opacity:1}}
-@media (prefers-reduced-motion:reduce){.radio.thud,.coords,.coord-n,.coord-w,.wisp{animation:none}.wisp{display:none}}
+@media (prefers-reduced-motion:reduce){.radio.thud,.radio.appear,.coords,.passage,.coord-n,.coord-w,.wisp{animation:none}.wisp{display:none}}
 </style>
 
 <button class="music" id="musicBtn" aria-pressed="false" aria-label="Background music">♪ Music off</button>
 <main class="stage" id="stage">
   <h1>Haunted Radio</h1>
+  <p class="tag" id="lvlTag">The Cathedral Set</p>
 
-  <div class="radio" id="radio">
-    <svg class="cab" viewBox="0 0 360 460" aria-hidden="true">
+  <div class="radio l1" id="radio">
+    <!-- Radio I: the cathedral set -->
+    <svg class="cab" data-l="1" viewBox="0 0 360 460" aria-hidden="true">
       <defs>
         <linearGradient id="wood" x1="0" x2="1">
           <stop offset="0" stop-color="#2e1608"/><stop offset=".18" stop-color="#6a3a18"/>
@@ -82,12 +106,10 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,9vw,52px);mar
         </radialGradient>
         <clipPath id="grilleClip" clipPathUnits="userSpaceOnUse"><path d="M64 300 L64 180 Q64 66 180 50 Q296 66 296 180 L296 300 Z"/></clipPath>
       </defs>
-      <!-- cabinet -->
       <path d="M18 458 L18 186 Q18 22 180 14 Q342 22 342 186 L342 458 Z" fill="url(#wood)"/>
       <path d="M18 458 L18 186 Q18 22 180 14 Q342 22 342 186 L342 458 Z" fill="url(#grain)"/>
       <path d="M34 450 L34 188 Q34 40 180 30 Q326 40 326 188 L326 450 Z" fill="none" stroke="#2a1306" stroke-width="3" opacity=".7"/>
       <path d="M36 448 L36 189 Q36 43 180 33 Q324 43 324 189 L324 448" fill="none" stroke="#c78a52" stroke-width="1" opacity=".35"/>
-      <!-- grille cloth -->
       <g transform="matrix(1 0 0 .904 0 .8)">
       <g clip-path="url(#grilleClip)">
         <rect x="60" y="40" width="240" height="270" fill="url(#cloth)"/>
@@ -95,7 +117,6 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,9vw,52px);mar
         <rect id="glowG" x="60" y="40" width="240" height="270" fill="url(#greenlight)" opacity="0"/>
         <path d="M64 300 L64 180 Q64 66 180 50 Q296 66 296 180 L296 300" fill="none" stroke="#050201" stroke-width="16" opacity=".8"/>
       </g>
-      <!-- gothic fretwork -->
       <g fill="#8a5126" stroke="#2a1306" stroke-width="1.5">
         <path d="M64 300 L64 180 Q64 66 180 50 Q296 66 296 180 L296 300 L284 300 L284 182 Q284 80 180 64 Q76 80 76 182 L76 300 Z"/>
         <path d="M118 300 L118 170 Q118 120 150 100 L156 106 Q130 126 130 172 L130 300 Z"/>
@@ -103,20 +124,127 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,9vw,52px);mar
         <path d="M174 300 L174 92 L186 92 L186 300 Z"/>
         <path d="M76 214 Q127 196 174 214 L174 226 Q127 208 76 226 Z"/>
         <path d="M186 214 Q233 196 284 214 L284 226 Q233 208 186 226 Z"/>
-        <!-- crescent moon carving -->
         <path d="M180 66 A22 22 0 1 0 202 92 A17 17 0 1 1 180 66 Z" transform="translate(-14,6)"/>
       </g>
       <path d="M76 300 L76 182 Q76 80 180 64 Q284 80 284 182 L284 300" fill="none" stroke="#d9b06a" stroke-width="1.6" opacity=".85"/>
       <path d="M64 300 L64 180 Q64 66 180 50 Q296 66 296 180 L296 300" fill="none" stroke="#e0b878" stroke-width="1.2" opacity=".5"/>
       </g>
       <rect x="54" y="268" width="252" height="12" rx="3" fill="#3b1c09"/>
-      <!-- dial bezel -->
       <rect x="44" y="288" width="272" height="94" rx="14" fill="#2a1306"/>
       <rect x="47" y="292" width="266" height="86" rx="12" fill="none" stroke="#c9a46a" stroke-width="2"/>
-      <!-- base -->
       <rect x="10" y="444" width="340" height="16" rx="4" fill="#2a1306"/>
       <circle cx="180" cy="418" r="24" fill="#1a0b03" stroke="#c9a46a" stroke-width="1.5"/>
     </svg>
+
+    <!-- Radio II: the coffin set -->
+    <svg class="cab" data-l="2" viewBox="0 0 360 460" aria-hidden="true" hidden>
+      <defs>
+        <linearGradient id="ebony2" x1="0" x2="1">
+          <stop offset="0" stop-color="#0b070a"/><stop offset=".2" stop-color="#2a1c27"/><stop offset=".5" stop-color="#3b2836"/><stop offset=".8" stop-color="#231721"/><stop offset="1" stop-color="#080508"/>
+        </linearGradient>
+        <linearGradient id="brass2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3d483"/><stop offset=".5" stop-color="#b8893a"/><stop offset="1" stop-color="#6e4c18"/>
+        </linearGradient>
+        <pattern id="grain2" width="30" height="460" patternUnits="userSpaceOnUse">
+          <path d="M4 0 C8 140 0 260 5 460 M17 0 C13 160 21 300 16 460" stroke="#000" stroke-opacity=".4" fill="none" stroke-width="1"/>
+        </pattern>
+        <pattern id="cloth2" width="4" height="4" patternUnits="userSpaceOnUse">
+          <rect width="4" height="4" fill="#0d0610"/><path d="M0 1H4M0 3H4" stroke="#5d3a6e" stroke-width=".7" opacity=".6"/><path d="M1 0V4M3 0V4" stroke="#7b4f8c" stroke-width=".6" opacity=".45"/>
+        </pattern>
+        <radialGradient id="backlight2" cx=".5" cy=".5" r=".6">
+          <stop offset="0" stop-color="#c88cff" stop-opacity=".9"/><stop offset="1" stop-color="#7a2cff" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="greenlight2" cx=".5" cy=".5" r=".6">
+          <stop offset="0" stop-color="#f0c8ff" stop-opacity=".95"/><stop offset="1" stop-color="#b04cff" stop-opacity="0"/>
+        </radialGradient>
+        <clipPath id="grilleClip2" clipPathUnits="userSpaceOnUse"><path d="M140 44 L220 44 L284 140 L266 262 L94 262 L76 140 Z"/></clipPath>
+      </defs>
+      <path d="M116 8 L244 8 L346 148 L314 452 L46 452 L14 148 Z" fill="url(#ebony2)" stroke="#040205" stroke-width="2"/>
+      <path d="M116 8 L244 8 L346 148 L314 452 L46 452 L14 148 Z" fill="url(#grain2)"/>
+      <path d="M122 20 L238 20 L332 150 L302 440 L58 440 L28 150 Z" fill="none" stroke="url(#brass2)" stroke-width="2.5"/>
+      <g fill="url(#brass2)" stroke="#3a2608" stroke-width="1">
+        <circle cx="122" cy="20" r="4"/><circle cx="238" cy="20" r="4"/><circle cx="28" cy="150" r="4"/><circle cx="332" cy="150" r="4"/><circle cx="58" cy="440" r="4"/><circle cx="302" cy="440" r="4"/>
+      </g>
+      <rect x="146" y="24" width="68" height="15" rx="2" fill="url(#brass2)" stroke="#3a2608"/>
+      <text x="180" y="35.5" text-anchor="middle" font-family="'Almendra SC',Georgia,serif" font-size="10" fill="#2a1a06" letter-spacing="2">R · I · P</text>
+      <g clip-path="url(#grilleClip2)">
+        <rect x="70" y="40" width="220" height="230" fill="url(#cloth2)"/>
+        <rect id="glowA2" x="70" y="40" width="220" height="230" fill="url(#backlight2)" opacity="0"/>
+        <rect id="glowG2" x="70" y="40" width="220" height="230" fill="url(#greenlight2)" opacity="0"/>
+        <path d="M140 44 L220 44 L284 140 L266 262 L94 262 L76 140 Z" fill="none" stroke="#000" stroke-width="16" opacity=".8"/>
+      </g>
+      <g fill="url(#brass2)" stroke="#2a1806" stroke-width="1.2">
+        <path fill-rule="evenodd" d="M140 44 L220 44 L284 140 L266 262 L94 262 L76 140 Z M146 54 L214 54 L272 141 L256 252 L104 252 L88 141 Z"/>
+        <rect x="100" y="198" width="160" height="6" rx="2"/>
+        <rect x="100" y="222" width="160" height="6" rx="2"/>
+        <rect x="173" y="62" width="14" height="184" rx="2"/>
+        <rect x="128" y="110" width="104" height="14" rx="2"/>
+      </g>
+      <g fill="none" stroke="url(#brass2)" stroke-width="5" stroke-linecap="round">
+        <path d="M18 190 q-13 20 3 40"/><path d="M342 190 q13 20 -3 40"/>
+      </g>
+      <rect x="54" y="268" width="252" height="12" rx="3" fill="#0a0609"/>
+      <rect x="44" y="288" width="272" height="94" rx="14" fill="#0b070a"/>
+      <rect x="47" y="292" width="266" height="86" rx="12" fill="none" stroke="#c9a25a" stroke-width="2"/>
+      <rect x="62" y="450" width="40" height="9" rx="2" fill="url(#brass2)"/><rect x="258" y="450" width="40" height="9" rx="2" fill="url(#brass2)"/>
+      <circle cx="180" cy="418" r="24" fill="#07040a" stroke="#c9a25a" stroke-width="1.5"/>
+    </svg>
+
+    <!-- Radio III: the tombstone set -->
+    <svg class="cab" data-l="3" viewBox="0 0 360 460" aria-hidden="true" hidden>
+      <defs>
+        <linearGradient id="stone3" x1="0" x2="1">
+          <stop offset="0" stop-color="#3a3c41"/><stop offset=".2" stop-color="#6f7278"/><stop offset=".5" stop-color="#83868c"/><stop offset=".8" stop-color="#63666c"/><stop offset="1" stop-color="#34363a"/>
+        </linearGradient>
+        <pattern id="speck3" width="23" height="19" patternUnits="userSpaceOnUse">
+          <circle cx="3" cy="4" r=".9" fill="#2b2d31" opacity=".5"/><circle cx="14" cy="11" r="1.2" fill="#2b2d31" opacity=".35"/><circle cx="19" cy="3" r=".7" fill="#c9ccd2" opacity=".35"/><circle cx="8" cy="16" r=".8" fill="#c9ccd2" opacity=".3"/>
+        </pattern>
+        <pattern id="cloth3" width="4" height="4" patternUnits="userSpaceOnUse">
+          <rect width="4" height="4" fill="#060b0e"/><path d="M0 1H4M0 3H4" stroke="#2e5260" stroke-width=".7" opacity=".55"/><path d="M1 0V4M3 0V4" stroke="#3c6a7a" stroke-width=".6" opacity=".4"/>
+        </pattern>
+        <radialGradient id="backlight3" cx=".5" cy=".45" r=".6">
+          <stop offset="0" stop-color="#a6ecff" stop-opacity=".9"/><stop offset="1" stop-color="#2cc7ff" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="greenlight3" cx=".5" cy=".45" r=".6">
+          <stop offset="0" stop-color="#b8ffc9" stop-opacity=".95"/><stop offset="1" stop-color="#2cff6a" stop-opacity="0"/>
+        </radialGradient>
+        <clipPath id="grilleClip3" clipPathUnits="userSpaceOnUse"><path d="M72 266 L72 166 Q72 72 180 64 Q288 72 288 166 L288 266 Z"/></clipPath>
+      </defs>
+      <path d="M20 446 L20 176 Q20 16 180 12 Q340 16 340 176 L340 446 Z" fill="url(#stone3)"/>
+      <path d="M20 446 L20 176 Q20 16 180 12 Q340 16 340 176 L340 446 Z" fill="url(#speck3)"/>
+      <path d="M32 446 L32 178 Q32 30 180 25 Q328 30 328 178 L328 446" fill="none" stroke="#2b2d31" stroke-width="2.5" opacity=".7"/>
+      <path d="M34 446 L34 179 Q34 33 180 28 Q326 33 326 179 L326 446" fill="none" stroke="#c4c7cd" stroke-width="1" opacity=".35"/>
+      <text x="180" y="54" text-anchor="middle" font-family="'Almendra SC',Georgia,serif" font-size="18" fill="#c4c7cd" opacity=".5" letter-spacing="4">R · I · P</text>
+      <text x="180" y="53" text-anchor="middle" font-family="'Almendra SC',Georgia,serif" font-size="18" fill="#26282c" letter-spacing="4">R · I · P</text>
+      <g clip-path="url(#grilleClip3)">
+        <rect x="66" y="58" width="228" height="212" fill="url(#cloth3)"/>
+        <rect id="glowA3" x="66" y="58" width="228" height="212" fill="url(#backlight3)" opacity="0"/>
+        <rect id="glowG3" x="66" y="58" width="228" height="212" fill="url(#greenlight3)" opacity="0"/>
+        <path d="M180 158 L84 128 M180 158 L118 82 M180 158 L180 70 M180 158 L242 82 M180 158 L276 128 M180 158 L282 200 M180 158 L282 264 M180 158 L230 264 M180 158 L130 264 M180 158 L78 264 M180 158 L78 200 M162.7 152.6 Q167.5 149.6 168.8 144.3 Q175.1 145.0 180.0 142.2 Q184.9 145.0 191.2 144.3 Q192.5 149.6 197.3 152.6 Q195.7 159.0 198.4 165.6 Q196.2 169.7 198.4 177.1 Q192.0 174.8 189.0 177.1 Q180.0 174.8 171.0 177.1 Q168.0 174.8 161.6 177.1 Q163.8 169.7 161.6 165.6 Q164.3 159.0 162.7 152.6 M145.4 147.2 Q155.0 141.2 157.7 130.6 Q170.2 132.0 180.0 126.3 Q189.8 132.0 202.3 130.6 Q205.0 141.2 214.6 147.2 Q211.4 159.9 216.7 173.1 Q212.3 181.4 216.7 196.2 Q204.1 191.6 198.0 196.2 Q180.0 191.6 162.0 196.2 Q155.9 191.6 143.3 196.2 Q147.7 181.4 143.3 173.1 Q148.6 159.9 145.4 147.2 M126.2 141.2 Q141.1 131.9 145.3 115.4 Q164.7 117.6 180.0 108.7 Q195.3 117.6 214.7 115.4 Q218.9 131.9 233.8 141.2 Q228.8 161.0 237.1 181.5 Q230.3 194.5 237.1 217.4 Q217.5 210.2 208.0 217.4 Q180.0 210.2 152.0 217.4 Q142.5 210.2 122.9 217.4 Q129.7 194.5 122.9 181.5 Q131.2 161.0 126.2 141.2 M105.1 134.6 Q125.8 121.6 131.6 98.7 Q158.7 101.7 180.0 89.4 Q201.3 101.7 228.4 98.7 Q234.2 121.6 254.9 134.6 Q248.0 162.1 259.6 190.8 Q250.0 208.8 259.6 240.7 Q232.2 230.8 219.0 240.7 Q180.0 230.8 141.0 240.7 Q127.8 230.8 100.4 240.7 Q110.0 208.8 100.4 190.8 Q112.0 162.1 105.1 134.6" fill="none" stroke="#e6e0cf" stroke-width="1.3" opacity=".75"/>
+        <path d="M232 64 L232 112" stroke="#e6e0cf" stroke-width=".8" opacity=".7"/>
+        <g transform="translate(232,117)" fill="#0b0d0f" stroke="#0b0d0f" stroke-width="1.2">
+          <path d="M-8,-5 L8,5 M-8,5 L8,-5 M-9,0 L9,0 M-6,-7 L6,7" fill="none"/>
+          <ellipse rx="4" ry="5"/><circle cy="-6" r="2.6"/>
+        </g>
+        <path d="M72 266 L72 166 Q72 72 180 64 Q288 72 288 166 L288 266" fill="none" stroke="#000" stroke-width="14" opacity=".7"/>
+      </g>
+      <path d="M72 266 L72 166 Q72 72 180 64 Q288 72 288 166 L288 266 L278 266 L278 168 Q278 84 180 76 Q82 84 82 168 L82 266 Z" fill="#5f6268" stroke="#26282c" stroke-width="1.5"/>
+      <path d="M82 266 L82 168 Q82 84 180 76 Q278 84 278 168 L278 266" fill="none" stroke="#c4c7cd" stroke-width="1" opacity=".45"/>
+      <g fill="none" stroke="#26282c" stroke-width="1.5" stroke-linecap="round">
+        <path d="M300 64 L290 92 L298 108 L286 138"/><path d="M28 318 L44 338 L38 362 L48 378"/><path d="M332 300 L320 314"/>
+      </g>
+      <g fill="#4f6b2e" opacity=".8">
+        <ellipse cx="58" cy="94" rx="16" ry="7" transform="rotate(-40 58 94)"/><ellipse cx="46" cy="110" rx="9" ry="5" transform="rotate(-60 46 110)"/>
+        <ellipse cx="312" cy="428" rx="20" ry="8"/><ellipse cx="44" cy="430" rx="14" ry="6"/>
+      </g>
+      <rect x="54" y="268" width="252" height="12" rx="3" fill="#2b2d31"/>
+      <rect x="44" y="288" width="272" height="94" rx="14" fill="#16181b"/>
+      <rect x="47" y="292" width="266" height="86" rx="12" fill="none" stroke="#d8d2c0" stroke-width="2"/>
+      <rect x="6" y="440" width="348" height="20" rx="3" fill="#4a4c51" stroke="#26282c" stroke-width="1.5"/>
+      <path d="M14 442 l3 -9 l3 9 l4 -12 l3 12 l3 -7 l2 7 M318 442 l3 -8 l3 8 l4 -13 l3 13 l3 -9 l3 9 M150 442 l2 -6 l3 6 l3 -9 l2 9" fill="#5d7d34" stroke="#3d5520" stroke-width=".8"/>
+      <circle cx="180" cy="418" r="24" fill="#101113" stroke="#d8d2c0" stroke-width="1.5"/>
+    </svg>
+
     <canvas id="dial" aria-label="Tuning dial — drag sideways to tune" role="slider" tabindex="0" aria-valuemin="530" aria-valuemax="1700" aria-valuenow="980"></canvas>
     <canvas id="eye" aria-hidden="true"></canvas>
     <button class="knob" id="power" aria-label="Power" aria-pressed="false"><span class="face" id="powerFace"></span></button>
@@ -124,26 +252,49 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,9vw,52px);mar
   </div>
 
   <div class="presets" id="presets"></div>
+  <div class="passage" id="passage" hidden>
+    <p id="passageTxt">The voices fall silent… somewhere in the dark, another radio crackles to life.</p>
+  </div>
   <div class="coords" id="coords" hidden><div class="coord-n" id="cn"></div><div class="coord-w" id="cw"></div></div>
+  <button class="restart" id="restart" hidden>↺ Replay</button>
 </main>
 
 <script>
 (()=>{
 "use strict";
-const SEALED="ni7mivSx2nncfBCb7Ic2Xq+HPWf7NmryOf/Z";
-// station: frequency (kc), roman order, knock count, moan pitch
-const ST=[{f:1340,n:1,d:6,p:392},{f:610,n:2,d:2,p:311},{f:1520,n:3,d:8,p:466},{f:880,n:4,d:4,p:349},{f:1090,n:5,d:7,p:262}];
+const SEALED="PQ4aEmhr+9opvkUnNs90w/FJPEpo1eFVWITR";
 const ROMAN=["","I","II","III","IV","V"];
-const FMIN=530,FMAX=1700,NEAR=45,LOCK=7;
-// each visitor gets their own station positions (kept for that browser so a reload doesn't scatter them again)
-(function placeStations(){
-  const ok=a=>Array.isArray(a)&&a.length===ST.length&&a.every((f,i)=>typeof f==="number"&&f>=580&&f<=1660&&Math.abs(f-980)>=NEAR+15&&a.every((g,j)=>i===j||Math.abs(f-g)>=110));
-  let fs=null;try{fs=JSON.parse(localStorage.getItem("hr-stations"));}catch(e){}
-  if(!ok(fs)){for(let tries=0;tries<5000;tries++){const c=ST.map(()=>580+Math.round(Math.random()*1080));if(ok(c)){fs=c;break;}}}
-  if(!ok(fs))fs=[1340,610,1520,880,1090];
-  try{localStorage.setItem("hr-stations",JSON.stringify(fs));}catch(e){}
-  ST.forEach((s,i)=>{s.f=fs[i];});
-})();
+const FMIN=530,FMAX=1700;
+
+/* ---------- the three radios: stations (roman order, knock count, moan pitch), tuning tolerance, look and sound ---------- */
+const LV=[
+ {title:"The Cathedral Set",tuneLen:6.2,key:"hr-stations",fall:[1340,610,1520,880,1090],near:45,lock:7,hash:3772246931,
+  st:[{n:1,d:6,p:392},{n:2,d:2,p:311},{n:3,d:8,p:466},{n:4,d:4,p:349},{n:5,d:7,p:262}],
+  snd:{bp:1400,bpw:500,q:.6,echo:.27,fb:.38,moan:"sine",vr:5.2,vd:7,hum:60,whis:1,wlen:.7,knock:"wood",click:1800,clunk:320,drone:0},
+  dial:{a:[34,20,10],b:[70,36,12],c:[22,12,5],d:[34,16,5],glow:"255,150,40",ink:"#fff0c8",sh:"255,170,60",gh:"190,255,200",ghf:"235,255,240",num:"120,255,150",numf:"170,255,180",needle:"#ff4a2e",vig:"20,8,0",word:"K I L O C Y C L E S"},
+  eye:["200,255,200","60,230,100","10,90,30"],wisp:"#e8fff0",
+  passage:"The voices fall silent… somewhere in the dark, another radio crackles to life."},
+ {title:"The Coffin Set",tuneLen:7.1,key:"hr-stations-2",fall:[700,1610,1180,560,1430],near:40,lock:6,hash:2113186369,
+  st:[{n:1,d:3,p:330},{n:2,d:9,p:415},{n:3,d:1,p:247},{n:4,d:5,p:370},{n:5,d:8,p:294}],
+  snd:{bp:900,bpw:300,q:.9,echo:.41,fb:.45,moan:"triangle",vr:3.6,vd:12,hum:50,whis:.82,wlen:.95,knock:"coffin",click:1300,clunk:240,drone:2},
+  dial:{a:[20,10,26],b:[52,24,70],c:[12,6,16],d:[26,10,34],glow:"190,110,255",ink:"#f3e2ff",sh:"200,140,255",gh:"240,190,255",ghf:"250,235,255",num:"220,140,255",numf:"240,205,255",needle:"#efcf7a",vig:"10,0,20",word:"S P I R I T · B A N D"},
+  eye:["245,210,255","190,80,255","70,10,110"],wisp:"#f2deff",
+  passage:"The coffin lid creaks shut… one last voice is calling from beneath the stones."},
+ {title:"The Tombstone Set",key:"hr-stations-3",fall:[1250,620,1560,840,1060],near:34,lock:5,hash:4145371470,
+  st:[{n:1,d:7,p:440},{n:2,d:4,p:277},{n:3,d:9,p:523},{n:4,d:2,p:330},{n:5,d:6,p:392}],
+  snd:{bp:2200,bpw:600,q:.5,echo:.19,fb:.5,moan:"sine",vr:6.6,vd:5,hum:40,whis:1.18,wlen:.55,knock:"stone",click:2400,clunk:420,drone:-2},
+  dial:{a:[14,22,26],b:[30,62,72],c:[8,12,14],d:[14,30,36],glow:"120,220,255",ink:"#e6fbff",sh:"130,220,255",gh:"190,255,240",ghf:"230,255,250",num:"140,255,230",numf:"190,255,240",needle:"#7dff8a",vig:"0,10,14",word:"B E Y O N D · T H E · V E I L"},
+  eye:["200,245,255","60,200,255","10,60,100"],wisp:"#e0fff6",passage:""}
+];
+// each visitor gets their own station positions per radio (kept for that browser so a reload doesn't scatter them again)
+LV.forEach(lv=>{
+  const ok=a=>Array.isArray(a)&&a.length===lv.st.length&&a.every((f,i)=>typeof f==="number"&&f>=580&&f<=1660&&Math.abs(f-980)>=lv.near+15&&a.every((g,j)=>i===j||Math.abs(f-g)>=110));
+  let fs=null;try{fs=JSON.parse(localStorage.getItem(lv.key));}catch(e){}
+  if(!ok(fs)){fs=null;for(let tries=0;tries<5000;tries++){const c=lv.st.map(()=>580+Math.round(Math.random()*1080));if(ok(c)){fs=c;break;}}}
+  if(!ok(fs))fs=lv.fall;
+  try{localStorage.setItem(lv.key,JSON.stringify(fs));}catch(e){}
+  lv.st.forEach((s,i)=>{s.f=fs[i];});
+});
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function fnv(t){let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;}
@@ -152,19 +303,19 @@ function unlock(b64,phrase){const raw=atob(b64);const next=stream(fnv(phrase));c
 
 const $=id=>document.getElementById(id);
 const radio=$("radio"),dial=$("dial"),eye=$("eye"),dg=dial.getContext("2d"),eg=eye.getContext("2d");
+let advTok=0,L=0,LVc=LV[0],ST=LV[0].st,codes=[],glowA=$("glowA"),glowG=$("glowG");
 let freq=980,on=false,onFade=0,won=false,winFade=0,sig=0,lockSt=null,lockSince=0,seqTok=0,seqRunning=false,showNum=0,numA=0,flash=0,knobAng=0;
 
 /* ---------- audio ---------- */
-let ctx,master,radioBus,echoIn,noiseBuf,stG,stBP,whG,whO,thG,thO,humG,musicNodes=null,musicOn=false;
+let ctx,master,radioBus,echoIn,noiseBuf,stG,stBP,whG,whO,thG,thO,humG,humO,dl,fb,vib,vibG,musicNodes=null,musicOn=false;
 function initAudio(){
   if(ctx){if(ctx.state==="suspended")ctx.resume();return;}
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
   ctx=new AC();
   const comp=ctx.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=4;comp.connect(ctx.destination);
   master=ctx.createGain();master.gain.value=.9;master.connect(comp);
-  // echo
   echoIn=ctx.createGain();echoIn.gain.value=.5;
-  const dl=ctx.createDelay(1);dl.delayTime.value=.27;const fb=ctx.createGain();fb.gain.value=.38;const elp=ctx.createBiquadFilter();elp.type="lowpass";elp.frequency.value=1600;
+  dl=ctx.createDelay(1);dl.delayTime.value=.27;fb=ctx.createGain();fb.gain.value=.38;const elp=ctx.createBiquadFilter();elp.type="lowpass";elp.frequency.value=1600;
   echoIn.connect(dl);dl.connect(elp);elp.connect(fb);fb.connect(dl);elp.connect(master);
   radioBus=ctx.createGain();radioBus.gain.value=1;
   const spk=ctx.createBiquadFilter();spk.type="bandpass";spk.frequency.value=1100;spk.Q.value=.45;
@@ -175,10 +326,16 @@ function initAudio(){
   stBP=ctx.createBiquadFilter();stBP.type="bandpass";stBP.frequency.value=1800;stBP.Q.value=.6;
   stG=ctx.createGain();stG.gain.value=0;ns.connect(stBP);stBP.connect(stG);stG.connect(radioBus);ns.start();
   whO=ctx.createOscillator();whO.type="sine";whG=ctx.createGain();whG.gain.value=0;whO.connect(whG);whG.connect(radioBus);whO.start();
-  thO=ctx.createOscillator();thO.type="sine";const lfo=ctx.createOscillator(),lg=ctx.createGain();lfo.frequency.value=5.2;lg.gain.value=7;lfo.connect(lg);lg.connect(thO.frequency);lfo.start();
+  thO=ctx.createOscillator();thO.type="sine";vib=ctx.createOscillator();vibG=ctx.createGain();vib.frequency.value=5.2;vibG.gain.value=7;vib.connect(vibG);vibG.connect(thO.frequency);vib.start();
   thG=ctx.createGain();thG.gain.value=0;thO.connect(thG);thG.connect(radioBus);thG.connect(echoIn);thO.start();
-  const hum=ctx.createOscillator();hum.frequency.value=60;humG=ctx.createGain();humG.gain.value=0;hum.connect(humG);humG.connect(master);hum.start();
+  humO=ctx.createOscillator();humO.frequency.value=60;humG=ctx.createGain();humG.gain.value=0;humO.connect(humG);humG.connect(master);humO.start();
+  applySound();
   setInterval(crackle,90);
+}
+function applySound(){
+  if(!ctx)return;const s=LVc.snd,t=ctx.currentTime;
+  dl.delayTime.setValueAtTime(s.echo,t);fb.gain.setValueAtTime(s.fb,t);stBP.Q.setValueAtTime(s.q,t);
+  thO.type=s.moan;vib.frequency.setValueAtTime(s.vr,t);vibG.gain.setValueAtTime(s.vd,t);humO.frequency.setValueAtTime(s.hum,t);
 }
 function crackle(){
   if(!ctx||!on||won)return;const lvl=stG.gain.value;if(Math.random()>lvl*.55)return;
@@ -187,33 +344,50 @@ function crackle(){
   s.connect(g);g.connect(radioBus);s.start(t,Math.random()*1.5,.06);
 }
 function whisper(){
-  if(!ctx)return;const t=ctx.currentTime;
-  [[0,700,1150,2500,1900],[.85,1000,620,2100,2700]].forEach(([dt,a1,a2,b1,b2])=>{
+  if(!ctx)return;const t=ctx.currentTime,k=LVc.snd.whis,len=LVc.snd.wlen;
+  [[0,700,1150,2500,1900],[len+.15,1000,620,2100,2700]].forEach(([dt,a1,a2,b1,b2])=>{
     const s=ctx.createBufferSource();s.buffer=noiseBuf;
     const f1=ctx.createBiquadFilter(),f2=ctx.createBiquadFilter();f1.type=f2.type="bandpass";f1.Q.value=9;f2.Q.value=11;
-    f1.frequency.setValueAtTime(a1,t+dt);f1.frequency.linearRampToValueAtTime(a2,t+dt+.7);
-    f2.frequency.setValueAtTime(b1,t+dt);f2.frequency.linearRampToValueAtTime(b2,t+dt+.7);
-    const g=ctx.createGain();g.gain.setValueAtTime(0,t+dt);g.gain.linearRampToValueAtTime(1.4,t+dt+.18);g.gain.linearRampToValueAtTime(.9,t+dt+.5);g.gain.linearRampToValueAtTime(0,t+dt+.8);
-    s.connect(f1);s.connect(f2);f1.connect(g);f2.connect(g);g.connect(radioBus);g.connect(echoIn);s.start(t+dt,Math.random(),1);
+    f1.frequency.setValueAtTime(a1*k,t+dt);f1.frequency.linearRampToValueAtTime(a2*k,t+dt+len);
+    f2.frequency.setValueAtTime(b1*k,t+dt);f2.frequency.linearRampToValueAtTime(b2*k,t+dt+len);
+    const g=ctx.createGain();g.gain.setValueAtTime(0,t+dt);g.gain.linearRampToValueAtTime(1.4,t+dt+.18);g.gain.linearRampToValueAtTime(.9,t+dt+len*.7);g.gain.linearRampToValueAtTime(0,t+dt+len+.1);
+    s.connect(f1);s.connect(f2);f1.connect(g);f2.connect(g);g.connect(radioBus);g.connect(echoIn);s.start(t+dt,Math.random(),len+.3);
   });
 }
 function knock(){
   flash=1;
   if(!reduce){radio.classList.remove("thud");void radio.offsetWidth;radio.classList.add("thud");}
-  if(!ctx)return;const t=ctx.currentTime;
-  const o=ctx.createOscillator(),g=ctx.createGain();o.type="sine";o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(52,t+.16);
-  g.gain.setValueAtTime(.9,t);g.gain.exponentialRampToValueAtTime(.0001,t+.28);o.connect(g);g.connect(master);g.connect(echoIn);o.start(t);o.stop(t+.3);
-  const s=ctx.createBufferSource(),lp=ctx.createBiquadFilter(),ng=ctx.createGain();s.buffer=noiseBuf;lp.type="lowpass";lp.frequency.value=900;
-  ng.gain.setValueAtTime(.5,t);ng.gain.exponentialRampToValueAtTime(.0001,t+.06);s.connect(lp);lp.connect(ng);ng.connect(master);s.start(t,Math.random(),.1);
+  if(!ctx)return;const t=ctx.currentTime,kind=LVc.snd.knock;
+  const thump=(f0,f1,dur,g0,type)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=type||"sine";o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+dur*.55);g.gain.setValueAtTime(g0,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(master);g.connect(echoIn);o.start(t);o.stop(t+dur+.02);};
+  const tick=(type,fq,dur,g0)=>{const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),ng=ctx.createGain();s.buffer=noiseBuf;f.type=type;f.frequency.value=fq;ng.gain.setValueAtTime(g0,t);ng.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(f);f.connect(ng);ng.connect(master);s.start(t,Math.random(),dur+.04);};
+  if(kind==="wood"){thump(150,52,.28,.9);tick("lowpass",900,.06,.5);}
+  else if(kind==="coffin"){thump(118,40,.5,.95);thump(236,180,.32,.18,"triangle");tick("lowpass",600,.09,.45);}
+  else{thump(420,130,.16,.55,"triangle");tick("bandpass",2600,.05,.6);tick("highpass",4200,.03,.25);}
 }
 function note(m,t,dur,type,g,dest,det){const o=ctx.createOscillator(),a=ctx.createGain();o.type=type;o.frequency.value=440*Math.pow(2,(m-69)/12);o.detune.value=det||0;a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.03);a.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(a);a.connect(dest);o.start(t);o.stop(t+dur+.05);}
 function bell(t,m,dest){[1,2.76,5.4].forEach((r,i)=>{const o=ctx.createOscillator(),a=ctx.createGain();o.frequency.value=440*Math.pow(2,(m-69)/12)*r;a.gain.setValueAtTime(.12/(i+1),t);a.gain.exponentialRampToValueAtTime(.0001,t+2.6);o.connect(a);a.connect(dest);o.start(t);o.stop(t+2.7);});}
 function sweep(t,dest){const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=noiseBuf;s.loop=true;f.type="bandpass";f.Q.value=4;f.frequency.setValueAtTime(400,t);f.frequency.exponentialRampToValueAtTime(3200,t+1.2);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.18,t+.4);g.gain.linearRampToValueAtTime(0,t+1.3);s.connect(f);f.connect(g);g.connect(dest);s.start(t);s.stop(t+1.4);}
+function tuneBus(cut){const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=cut;const vg=ctx.createGain();vg.gain.value=1;lp.connect(vg);vg.connect(master);vg.connect(echoIn);return {lp,vg};}
+/* Radio I solved: the opening call of the theme, in D minor (~6 s) */
+function tune1(){
+  initAudio();if(!ctx)return;const t0=ctx.currentTime+.08,{lp,vg}=tuneBus(900);
+  [[50,53,57,38],[46,50,53,34],[45,49,52,33],[50,53,57,38]].forEach((c,i)=>{const d=i===3?2.8:1.35;c.forEach(m=>{note(m,t0+i,d,"sawtooth",.045,lp);note(m,t0+i,d,"sawtooth",.03,lp,9);});});
+  [[74,0],[77,.28],[81,.56],[86,.84],[85,1.25],[81,1.55],[82,1.85],[86,2.2],[89,2.5],[88,2.75]].forEach(([m,dt])=>{note(m,t0+dt,.55,"triangle",.11,vg);note(m-12,t0+dt,.55,"sine",.06,vg);});
+  note(86,t0+3,2.4,"triangle",.12,vg);note(74,t0+3,2.4,"sine",.07,vg);
+  sweep(t0+2.4,vg);bell(t0+3.05,74,vg);bell(t0+3.5,62,vg);
+}
+/* Radio II solved: the same call a step higher, slower, on a hollow organ with a low funeral bell (~7 s) */
+function tune2(){
+  initAudio();if(!ctx)return;const t0=ctx.currentTime+.08,{lp,vg}=tuneBus(1250),b=1.15;
+  [[52,55,59,40],[48,52,55,36],[47,51,54,35],[52,55,59,40]].forEach((c,i)=>{const d=i===3?3.2:1.5;c.forEach(m=>{note(m,t0+i*b,d,"triangle",.07,lp);note(m+12,t0+i*b,d,"sine",.03,lp,-6);});});
+  [[76,0],[79,.32],[83,.64],[88,.96],[87,1.42],[83,1.76],[84,2.1],[88,2.5],[91,2.85],[90,3.2]].forEach(([m,dt])=>{note(m,t0+dt,.6,"square",.035,lp);note(m-12,t0+dt,.6,"sine",.06,vg);});
+  note(88,t0+3.45,2.8,"square",.04,lp);note(76,t0+3.45,2.8,"sine",.08,vg);
+  for(let i=0;i<8;i++)note(100-[0,3,7,12][i%4],t0+3.5+i*.09,.5,"sine",.035,vg);
+  sweep(t0+2.7,vg);bell(t0+3.5,52,vg);bell(t0+4.4,40,vg);
+}
+/* Radio III solved: the full theme — the rising call, then a falling ghostly answer settling on a long D minor chord (~11 s) */
 function victory(){
-  initAudio();if(!ctx)return;const t0=ctx.currentTime+.08;
-  const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=900;const vg=ctx.createGain();vg.gain.value=1;
-  lp.connect(vg);vg.connect(master);vg.connect(echoIn);
-  // two phrases: the rising call, then a falling ghostly answer that settles on a long D minor chord (~11 s)
+  initAudio();if(!ctx)return;const t0=ctx.currentTime+.08,{lp,vg}=tuneBus(900);
   const CH=[[50,53,57,38],[46,50,53,34],[45,49,52,33],[50,53,57,38],[55,58,62,43],[58,62,65,46],[55,58,62,43],[57,61,64,45],[50,53,57,38]];
   CH.forEach((c,i)=>{const d=i===8?3.4:1.35;c.forEach(m=>{note(m,t0+i,d,"sawtooth",.045,lp);note(m,t0+i,d,"sawtooth",.03,lp,9);});});
   [[74,0],[77,.28],[81,.56],[86,.84],[85,1.25],[81,1.55],[82,1.85],[86,2.2],[89,2.5],[88,2.85],[86,3.3],[93,3.75],
@@ -224,13 +398,14 @@ function victory(){
   for(let i=0;i<16;i++)note(98+[0,3,7,12][i%4],t0+8.2+i*.07,.45,"sine",.04,vg);
   bell(t0+8.3,74,vg);bell(t0+8.7,62,vg);bell(t0+9.4,50,vg);
 }
+const TUNES=[tune1,tune2,victory];
 function startMusic(){
-  initAudio();if(!ctx||musicNodes)return;
+  initAudio();if(!ctx||musicNodes)return;const sh=LVc.snd.drone;
   const g=ctx.createGain();g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(.06,ctx.currentTime+2);
   const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=420;lp.connect(g);g.connect(master);g.connect(echoIn);
   const lfo=ctx.createOscillator(),lg=ctx.createGain();lfo.frequency.value=.09;lg.gain.value=180;lfo.connect(lg);lg.connect(lp.frequency);lfo.start();
-  const os=[38,45,50,53].map((m,i)=>{const o=ctx.createOscillator();o.type="sawtooth";o.frequency.value=440*Math.pow(2,(m-69)/12);o.detune.value=(i%2?-7:6);o.connect(lp);o.start();return o;});
-  const iv=setInterval(()=>{if(ctx)bell(ctx.currentTime,[62,65,69,57][Math.floor(Math.random()*4)],g);},5200);
+  const os=[38,45,50,53].map((m,i)=>{const o=ctx.createOscillator();o.type="sawtooth";o.frequency.value=440*Math.pow(2,(m+sh-69)/12);o.detune.value=(i%2?-7:6);o.connect(lp);o.start();return o;});
+  const iv=setInterval(()=>{if(ctx)bell(ctx.currentTime,[62,65,69,57][Math.floor(Math.random()*4)]+sh,g);},5200);
   musicNodes={g,os:[...os,lfo],iv};
 }
 function stopMusic(){if(!musicNodes)return;const m=musicNodes;musicNodes=null;clearInterval(m.iv);const t=ctx.currentTime;m.g.gain.cancelScheduledValues(t);m.g.gain.setValueAtTime(m.g.gain.value,t);m.g.gain.linearRampToValueAtTime(0,t+1);m.os.forEach(o=>o.stop(t+1.1));}
@@ -240,7 +415,7 @@ $("musicBtn").addEventListener("click",e=>{musicOn=!musicOn;e.currentTarget.setA
 function setFreq(f){freq=Math.max(FMIN,Math.min(FMAX,f));dial.setAttribute("aria-valuenow",Math.round(freq));}
 function powerOn(){initAudio();if(!on){on=true;}}
 $("power").addEventListener("click",()=>{initAudio();on=!on;if(!on)cancelSeq();clunk();});
-function clunk(){if(!ctx)return;const t=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain();o.type="square";o.frequency.setValueAtTime(320,t);o.frequency.exponentialRampToValueAtTime(90,t+.05);g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.0001,t+.08);o.connect(g);g.connect(master);o.start(t);o.stop(t+.1);}
+function clunk(){if(!ctx)return;const t=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain(),f=LVc.snd.clunk;o.type="square";o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.28,t+.05);g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.0001,t+.08);o.connect(g);g.connect(master);o.start(t);o.stop(t+.1);}
 const tune=$("tune");let tDrag=null;
 function angAt(e){const r=tune.getBoundingClientRect();return Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2));}
 tune.addEventListener("pointerdown",e=>{if(won)return;powerOn();tDrag={a:angAt(e),id:e.pointerId};tune.setPointerCapture(e.pointerId);tune.style.cursor="grabbing";e.preventDefault();});
@@ -264,26 +439,64 @@ function startSeq(st){
 
 /* ---------- presets ---------- */
 const vals=[0,0,0,0,0];
-const pre=$("presets");
+const pre=$("presets"),keys=[];
 vals.forEach((_,i)=>{const b=document.createElement("button");b.className="key";b.id="key"+(i+1);b.setAttribute("aria-label","Preset "+ROMAN[i+1]);
   b.innerHTML='<span class="rn">'+ROMAN[i+1]+'</span><span class="dg">·</span>';
   b.addEventListener("click",()=>{initAudio();vals[i]=(vals[i]+1)%10;b.querySelector(".dg").textContent=vals[i]?vals[i]:"·";b.classList.toggle("filled",!!vals[i]);click();check();});
-  pre.appendChild(b);});
-function click(){if(!ctx)return;const t=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain();o.type="square";o.frequency.value=1800;g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+.03);o.connect(g);g.connect(master);o.start(t);o.stop(t+.04);}
+  pre.appendChild(b);keys.push(b);});
+function click(){if(!ctx)return;const t=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain();o.type="square";o.frequency.value=LVc.snd.click;g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+.03);o.connect(g);g.connect(master);o.start(t);o.stop(t+.04);}
 function check(){
   if(won||vals.some(v=>!v))return;
-  const txt=unlock(SEALED,vals.join(""));
-  if(txt.startsWith("N 38")){win(txt);}
+  const code=vals.join("");
+  if(L<LV.length-1){if(fnv("hr|L"+(L+1)+"|"+code)===LVc.hash)levelWin(code);}
+  else{const txt=unlock(SEALED,[...codes.slice(0,L),code].join("|"));if(txt.startsWith("N 38"))win(txt);}
+}
+function hush(){if(ctx){const t=ctx.currentTime;[stG,whG,thG].forEach(g=>{g.gain.cancelScheduledValues(t);g.gain.setTargetAtTime(0,t,.25);});}}
+function ghosts(){
+  if(reduce)return;const svg='<svg viewBox="0 0 40 50"><path d="M20 2C9 2 4 11 4 22v24l6-5 5 5 5-5 5 5 5-5 6 5V22C36 11 31 2 20 2z" fill="'+LVc.wisp+'" opacity=".85"/><ellipse cx="14" cy="20" rx="3" ry="4.5" fill="#0f0a18"/><ellipse cx="26" cy="20" rx="3" ry="4.5" fill="#0f0a18"/><ellipse cx="20" cy="31" rx="3" ry="4" fill="#0f0a18"/></svg>';
+  for(let i=0;i<6;i++){const d=document.createElement("div");d.className="wisp";d.innerHTML=svg;d.style.left=(18+i*11+Math.random()*4)+"%";d.style.animationDelay=(.4+i*.35)+"s";d.style.setProperty("--dx",((Math.random()-.5)*120)+"%");radio.appendChild(d);setTimeout(()=>d.remove(),6000+i*400);}
+}
+function saveProgress(){try{localStorage.setItem("hr-progress",JSON.stringify({codes:codes.slice(0,2)}));}catch(e){}}
+function levelWin(code){
+  won=true;cancelSeq();document.body.classList.add("won");codes[L]=code;saveProgress();
+  hush();on=true;TUNES[L]();ghosts();
+  setTimeout(()=>{$("passageTxt").textContent=LVc.passage;$("passage").hidden=false;},1600);
+  const tok=++advTok,next=L+1;
+  setTimeout(()=>{if(tok===advTok&&won&&L===next-1)setLevel(next,true);},(LVc.tuneLen+3)*1000+80);
 }
 function win(txt){
   won=true;cancelSeq();document.body.classList.add("won");
-  if(ctx){const t=ctx.currentTime;[stG,whG,thG].forEach(g=>{g.gain.cancelScheduledValues(t);g.gain.setTargetAtTime(0,t,.25);});}
-  on=true;victory();
+  hush();on=true;TUNES[L]();ghosts();
   const [n,w]=txt.split("\n");
-  setTimeout(()=>{$("cn").textContent=n;$("cw").textContent=w;$("coords").hidden=false;},1300);
-  if(!reduce){const svg='<svg viewBox="0 0 40 50"><path d="M20 2C9 2 4 11 4 22v24l6-5 5 5 5-5 5 5 5-5 6 5V22C36 11 31 2 20 2z" fill="#e8fff0" opacity=".85"/><ellipse cx="14" cy="20" rx="3" ry="4.5" fill="#0f0a18"/><ellipse cx="26" cy="20" rx="3" ry="4.5" fill="#0f0a18"/><ellipse cx="20" cy="31" rx="3" ry="4" fill="#0f0a18"/></svg>';
-    for(let i=0;i<6;i++){const d=document.createElement("div");d.className="wisp";d.innerHTML=svg;d.style.left=(18+i*11+Math.random()*4)+"%";d.style.animationDelay=(.4+i*.35)+"s";d.style.setProperty("--dx",((Math.random()-.5)*120)+"%");radio.appendChild(d);setTimeout(()=>d.remove(),6000+i*400);}}
+  setTimeout(()=>{$("cn").textContent=n;$("cw").textContent=w;$("coords").hidden=false;$("restart").hidden=false;},1300);
 }
+
+/* ---------- moving between radios ---------- */
+function setLevel(i,fresh){
+  L=i;LVc=LV[i];ST=LVc.st;
+  radio.querySelectorAll("svg.cab").forEach(s=>{if(+s.dataset.l===i+1)s.removeAttribute("hidden");else s.setAttribute("hidden","");});
+  radio.classList.remove("l1","l2","l3");radio.classList.add("l"+(i+1));
+  document.body.classList.remove("lv2","lv3","won");if(i)document.body.classList.add("lv"+(i+1));
+  glowA=$(i?"glowA"+(i+1):"glowA");glowG=$(i?"glowG"+(i+1):"glowG");
+  $("lvlTag").textContent=LVc.title;
+  vals.fill(0);keys.forEach(b=>{b.querySelector(".dg").textContent="·";b.classList.remove("filled");});
+  $("passage").hidden=true;$("coords").hidden=true;$("restart").hidden=true;
+  cancelSeq();lockSt=null;numA=0;freq=980;dial.setAttribute("aria-valuenow",980);on=false;onFade=0;won=false;winFade=0;flash=0;
+  radio.querySelectorAll(".wisp").forEach(w=>w.remove());
+  applySound();
+  if(musicOn&&musicNodes){stopMusic();setTimeout(()=>{if(musicOn)startMusic();},1100);}
+  if(fresh)scrollTo({top:0,behavior:reduce?"auto":"smooth"});
+  if(fresh&&!reduce){radio.classList.remove("appear");void radio.offsetWidth;radio.classList.add("appear");}
+}
+
+$("restart").addEventListener("click",()=>{advTok++;codes=[];saveProgress();setLevel(0,true);scrollTo({top:0,behavior:reduce?"auto":"smooth"});});
+// pick up where this browser left off
+(function resume(){
+  let p=null;try{p=JSON.parse(localStorage.getItem("hr-progress"));}catch(e){}
+  const c=p&&Array.isArray(p.codes)?p.codes:[];
+  for(let i=0;i<c.length&&i<LV.length-1;i++){if(typeof c[i]==="string"&&fnv("hr|L"+(i+1)+"|"+c[i])===LV[i].hash)codes[i]=c[i];else break;}
+  setLevel(codes.length,false);
+})();
 
 /* ---------- drawing ---------- */
 function size(){const dpr=Math.min(2,window.devicePixelRatio||1);[dial,eye].forEach(c=>{c.width=Math.round(c.clientWidth*dpr);c.height=Math.round(c.clientHeight*dpr);});}
@@ -291,55 +504,51 @@ addEventListener("resize",size);size();
 const fx=(f,W,p)=>p+(f-FMIN)/(FMAX-FMIN)*(W-2*p);
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
 function drawDial(staticLvl,t){
-  const W=dial.width,H=dial.height,p=W*.05,u=H/58;if(!W)return;
+  const W=dial.width,H=dial.height,p=W*.05,u=H/58;if(!W)return;const T=LVc.dial;
   dg.clearRect(0,0,W,H);rr(dg,0,0,W,H,8*u);dg.save();dg.clip();
-  const L=onFade;
+  const Lf=onFade;
   const gr=dg.createLinearGradient(0,0,0,H);
-  gr.addColorStop(0,mix([34,20,10],[70,36,12],L));gr.addColorStop(1,mix([22,12,5],[34,16,5],L));
+  gr.addColorStop(0,mix(T.a,T.b,Lf));gr.addColorStop(1,mix(T.c,T.d,Lf));
   dg.fillStyle=gr;dg.fillRect(0,0,W,H);
-  {const rg=dg.createRadialGradient(W/2,H*.55,0,W/2,H*.55,W*.5);rg.addColorStop(0,"rgba(255,150,40,"+(.35*L)+")");rg.addColorStop(1,"rgba(255,120,20,0)");dg.fillStyle=rg;dg.fillRect(0,0,W,H);}
-  // scale
-  const ink=L>.3?"#fff0c8":"rgba(201,164,106,.35)";dg.shadowColor="rgba(255,170,60,"+(.9*L)+")";dg.shadowBlur=6*u*L;
+  {const rg=dg.createRadialGradient(W/2,H*.55,0,W/2,H*.55,W*.5);rg.addColorStop(0,"rgba("+T.glow+","+(.35*Lf)+")");rg.addColorStop(1,"rgba("+T.glow+",0)");dg.fillStyle=rg;dg.fillRect(0,0,W,H);}
+  const ink=Lf>.3?T.ink:"rgba(201,164,106,.35)";dg.shadowColor="rgba("+T.sh+","+(.9*Lf)+")";dg.shadowBlur=6*u*Lf;
   dg.strokeStyle=ink;dg.fillStyle=ink;dg.lineWidth=Math.max(1,u*.8);
   for(let f=550;f<=1650;f+=10){const x=fx(f,W,p),big=f%50===0;dg.beginPath();dg.moveTo(x,H*.42);dg.lineTo(x,H*(big?.66:.54));dg.stroke();}
   dg.font=Math.round(14*u)+"px 'Almendra SC',Georgia,serif";dg.textAlign="center";dg.textBaseline="alphabetic";
   [600,800,1000,1200,1400,1600].forEach(f=>dg.fillText(String(f/10),fx(f,W,p),H*.36));
-  dg.font=Math.round(8.5*u)+"px 'Almendra SC',Georgia,serif";dg.fillText("K I L O C Y C L E S",W/2,H*.88);
-  // static snow
+  dg.font=Math.round(8.5*u)+"px 'Almendra SC',Georgia,serif";dg.fillText(T.word,W/2,H*.88);
   dg.shadowBlur=0;
   const nx=fx(freq,W,p);
-  // ghost face rising in the glass
   if(sig>.3&&on&&!won){const a=Math.min(1,(sig-.3)/.6)*(.55+.25*Math.sin(t/240));
     const gx=nx+(nx<W/2?1:-1)*W*.13,gy=H*.5+Math.sin(t/400)*u*2;
-    dg.save();dg.globalAlpha=a;dg.shadowColor="rgba(190,255,200,.9)";dg.shadowBlur=10*u;dg.fillStyle="rgba(235,255,240,.85)";
+    dg.save();dg.globalAlpha=a;dg.shadowColor="rgba("+T.gh+",.9)";dg.shadowBlur=10*u;dg.fillStyle="rgba("+T.ghf+",.85)";
     dg.beginPath();dg.ellipse(gx,gy,9*u,13*u,0,0,Math.PI*2);dg.fill();dg.shadowBlur=0;dg.fillStyle="rgba(20,10,20,.85)";
     dg.beginPath();dg.ellipse(gx-3.3*u,gy-3*u,1.7*u,2.6*u,0,0,7);dg.ellipse(gx+3.3*u,gy-3*u,1.7*u,2.6*u,0,0,7);dg.fill();
     dg.beginPath();dg.ellipse(gx,gy+4.5*u,1.8*u,2.6*u+Math.sin(t/180)*u*.8,0,0,7);dg.fill();dg.restore();
     if(showNum){numA=Math.min(1,numA+.04);}else numA=Math.max(0,numA-.06);
   }else numA=Math.max(0,numA-.06);
-  if(numA>0&&showNum){const gx=nx+(nx<W/2?1:-1)*W*.29;dg.save();dg.globalAlpha=numA*(.75+.25*Math.sin(t/120));dg.font=Math.round(30*u)+"px 'Almendra SC',Georgia,serif";dg.textAlign="center";dg.textBaseline="middle";dg.shadowColor="rgba(120,255,150,1)";dg.shadowBlur=14*u;dg.fillStyle="rgba(170,255,180,.95)";dg.fillText(ROMAN[showNum],gx,H*.56);dg.restore();}
-  // needle
-  dg.save();dg.shadowColor="rgba(0,0,0,.5)";dg.shadowBlur=3*u;dg.strokeStyle="#ff4a2e";dg.lineWidth=2.2*u;dg.beginPath();dg.moveTo(nx,H*.06);dg.lineTo(nx,H*.94);dg.stroke();dg.restore();
-  // glass vignette
-  const vg=dg.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,W*.6);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(20,8,0,.55)");dg.fillStyle=vg;dg.fillRect(0,0,W,H);
+  if(numA>0&&showNum){const gx=nx+(nx<W/2?1:-1)*W*.29;dg.save();dg.globalAlpha=numA*(.75+.25*Math.sin(t/120));dg.font=Math.round(30*u)+"px 'Almendra SC',Georgia,serif";dg.textAlign="center";dg.textBaseline="middle";dg.shadowColor="rgba("+T.num+",1)";dg.shadowBlur=14*u;dg.fillStyle="rgba("+T.numf+",.95)";dg.fillText(ROMAN[showNum],gx,H*.56);dg.restore();}
+  dg.save();dg.shadowColor="rgba(0,0,0,.5)";dg.shadowBlur=3*u;dg.strokeStyle=T.needle;dg.lineWidth=2.2*u;dg.beginPath();dg.moveTo(nx,H*.06);dg.lineTo(nx,H*.94);dg.stroke();dg.restore();
+  const vg=dg.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,W*.6);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba("+T.vig+",.55)");dg.fillStyle=vg;dg.fillRect(0,0,W,H);
   dg.fillStyle="rgba(255,255,255,.07)";dg.fillRect(0,0,W,H*.22);
   dg.restore();
 }
 function mix(a,b,t){return "rgb("+a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(",")+")";}
 function drawEye(){
-  const W=eye.width;if(!W)return;const c=W/2,r=W*.46;eg.clearRect(0,0,W,W);
+  const W=eye.width;if(!W)return;const c=W/2,r=W*.46,E=LVc.eye;eg.clearRect(0,0,W,W);
   eg.fillStyle="#0b0604";eg.beginPath();eg.arc(c,c,r,0,7);eg.fill();
   if(onFade>.05){
     const b=Math.min(1,onFade*(.55+.45*sig)+flash*.6+winFade);
-    const gr=eg.createRadialGradient(c,c,r*.15,c,c,r);gr.addColorStop(0,"rgba(200,255,200,"+b+")");gr.addColorStop(.5,"rgba(60,230,100,"+(b*.9)+")");gr.addColorStop(1,"rgba(10,90,30,"+(b*.8)+")");
+    const gr=eg.createRadialGradient(c,c,r*.15,c,c,r);gr.addColorStop(0,"rgba("+E[0]+","+b+")");gr.addColorStop(.5,"rgba("+E[1]+","+(b*.9)+")");gr.addColorStop(1,"rgba("+E[2]+","+(b*.8)+")");
     eg.fillStyle=gr;eg.beginPath();eg.arc(c,c,r*.92,0,7);eg.fill();
-    const open=(won?.02:(1-sig))*Math.PI*.55+.06; // shadow wedge closes as signal strengthens
+    const open=(won?.02:(1-sig))*Math.PI*.55+.06;
     eg.fillStyle="#0b0604";eg.beginPath();eg.moveTo(c,c);eg.arc(c,c,r*.95,-Math.PI/2-open,-Math.PI/2+open);eg.closePath();eg.fill();
   }
   eg.fillStyle="#1a0d06";eg.beginPath();eg.arc(c,c,r*.2,0,7);eg.fill();
 }
 function tick(t){
   onFade+=((on?1:0)-onFade)*.06;if(won)winFade=Math.min(1,winFade+.01);flash*=.9;
+  const NEAR=LVc.near,LOCK=LVc.lock,S=LVc.snd;
   let best=null,off=1e9;for(const s of ST){const o=freq-s.f;if(Math.abs(o)<Math.abs(off)){off=o;best=s;}}
   const ao=Math.abs(off);sig=on?Math.pow(Math.max(0,1-ao/NEAR),1.5):0;
   const locked=on&&!won&&ao<=LOCK;
@@ -347,19 +556,19 @@ function tick(t){
   else if(lockSt){cancelSeq();lockSt=null;}
   const staticLvl=won?0:on?(.9*(1-sig)+.05):0;
   if(ctx){const now=ctx.currentTime;
-    if(!won){stG.gain.setTargetAtTime(staticLvl*.32,now,.05);stBP.frequency.setTargetAtTime(1400+Math.sin(t/700)*500+Math.random()*300,now,.1);
+    if(!won){stG.gain.setTargetAtTime(staticLvl*.32,now,.05);stBP.frequency.setTargetAtTime(S.bp+Math.sin(t/700)*S.bpw+Math.random()*300,now,.1);
       const wg=on&&ao<NEAR&&ao>2?.035*(1-ao/NEAR):0;whG.gain.setTargetAtTime(wg,now,.05);whO.frequency.setTargetAtTime(30+ao*38,now,.03);
       thG.gain.setTargetAtTime(on?.09*sig*sig:0,now,.08);thO.frequency.setTargetAtTime(best.p*(1+off*.004),now,.05);}
     humG.gain.setTargetAtTime(on&&!won?.012:0,now,.2);}
-  $("glowA").setAttribute("opacity",(onFade*(.22+.22*sig+flash*.3)*(1-winFade)).toFixed(3));
-  $("glowG").setAttribute("opacity",(winFade*.9).toFixed(3));
+  glowA.setAttribute("opacity",(onFade*(.22+.22*sig+flash*.3)*(1-winFade)).toFixed(3));
+  glowG.setAttribute("opacity",(winFade*.9).toFixed(3));
   $("tuneFace").style.transform="rotate("+knobAng+"rad)";
   const pf=$("powerFace");if(pf.classList.contains("on")!==on){pf.classList.toggle("on",on);$("power").setAttribute("aria-pressed",on);}
   drawDial(staticLvl,t);drawEye();
   requestAnimationFrame(tick);
 }
 requestAnimationFrame(tick);
-window.__hr={setFreq,powerOn,ST,get sig(){return sig;}};
+window.__hr={setFreq,powerOn,setLevel,LV,get ST(){return ST;},get L(){return L;},get sig(){return sig;}};
 })();
 </script>
 
