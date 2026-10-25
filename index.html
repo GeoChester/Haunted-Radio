@@ -77,9 +77,26 @@ body.lv3 .key .rn{color:#2b2d31}body.lv3 .key .dg{color:#111315}body.lv3 .key.fi
 @keyframes glow{50%{filter:brightness(1.25)}}
 @keyframes flick{0%{opacity:0}10%{opacity:.8}14%{opacity:.1}22%{opacity:.9}26%{opacity:.2}40%,100%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.radio.thud,.radio.appear,.coords,.passage,.coord-n,.coord-w,.wisp{animation:none}.wisp{display:none}}
+.adm{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(5,3,10,.78);padding:16px}
+.adm[hidden]{display:none!important}
+.adm form{display:flex;flex-direction:column;gap:12px;width:min(320px,100%);background:var(--plum);border:1px solid #5a4378;border-radius:14px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.7)}
+.adm h2{margin:0;font-family:var(--display);font-weight:400;color:#ffcf86;font-size:22px;text-align:center}
+.adm input{font:16px var(--mono);padding:10px 12px;border-radius:8px;border:1px solid #5a4378;background:#140b22;color:var(--ink)}
+.adm .row{display:flex;gap:10px;justify-content:flex-end}
+.adm button{font-family:var(--display);font-size:16px;padding:9px 16px;min-height:44px;border-radius:999px;border:1px solid #9dffa8;background:rgba(20,40,24,.75);color:#c9ffd0;cursor:pointer}
+.adm button.cx{border-color:#5a4378;background:none;color:var(--muted)}
+.adm .err{margin:0;min-height:1.2em;color:#ff8a7a;font-style:italic;text-align:center}
 </style>
 
 <button class="music" id="musicBtn" aria-pressed="false" aria-label="Background music">♪ Music off</button>
+<div class="adm" id="adm" hidden role="dialog" aria-modal="true" aria-labelledby="admT">
+  <form id="admF" autocomplete="off">
+    <h2 id="admT">Caretaker's Key</h2>
+    <input id="admP" type="password" aria-label="Admin password" placeholder="Password">
+    <p class="err" id="admE"></p>
+    <div class="row"><button type="button" class="cx" id="admX">Cancel</button><button type="submit">Jump to end</button></div>
+  </form>
+</div>
 <main class="stage" id="stage">
   <h1>Haunted Radio</h1>
   <p class="tag" id="lvlTag">The Cathedral Set</p>
@@ -262,7 +279,7 @@ body.lv3 .key .rn{color:#2b2d31}body.lv3 .key .dg{color:#111315}body.lv3 .key.fi
 <script>
 (()=>{
 "use strict";
-const SEALED="PQ4aEmhr+9opvkUnNs90w/FJPEpo1eFVWITR";
+const SEALED="PQ4aEmhr+9opvkUoNc90w/FJPEpo1eFVWITd";
 const ROMAN=["","I","II","III","IV","V"];
 const FMIN=530,FMAX=1700;
 
@@ -563,6 +580,25 @@ function tick(t){
   drawDial(staticLvl,t);drawEye();
   requestAnimationFrame(tick);
 }
+
+/* ---------- admin: tap the title 5 times (or open with #admin) to jump to completion ---------- */
+const adm=$("adm"),admP=$("admP"),admE=$("admE");
+function openAdm(){adm.hidden=false;admE.textContent="";admP.value="";setTimeout(()=>admP.focus(),30);}
+function closeAdm(){adm.hidden=true;}
+let taps=0,tapT=0;
+document.querySelector("h1").addEventListener("click",()=>{const n=Date.now();taps=n-tapT<700?taps+1:1;tapT=n;if(taps>=5){taps=0;openAdm();}});
+$("admX").addEventListener("click",closeAdm);
+adm.addEventListener("keydown",e=>{if(e.key==="Escape")closeAdm();});
+$("admF").addEventListener("submit",e=>{
+  e.preventDefault();
+  if(fnv("hr-admin|"+admP.value.trim().toLowerCase())!==4031597815){admE.textContent="The spirits do not know that word.";admP.select();return;}
+  closeAdm();advTok++;
+  codes=LV.map(lv=>lv.st.map(s=>s.d).join(""));
+  setLevel(LV.length-1,true);
+  codes[L].split("").forEach((d,i)=>{vals[i]=+d;keys[i].querySelector(".dg").textContent=d;keys[i].classList.add("filled");});
+  initAudio();check();
+});
+if(location.hash==="#admin")openAdm();
 requestAnimationFrame(tick);
 window.__hr={setFreq,powerOn,setLevel,LV,get ST(){return ST;},get L(){return L;},get sig(){return sig;}};
 })();
